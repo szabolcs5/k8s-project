@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-deployment
+  labels:
+    owner: szabi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: consumer
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        name: consumer
+    spec:
+      containers:
+      - name: consumer
+        image: registry.gitlab.com/somszabolcs3/uhubprojekt/consumer:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+      imagePullSecrets:
+        - name: registry-demo-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consumer-service
+  labels:
+    owner: szabi
+spec:
+  selector:
+    name: consumer
+  ports:
+  - name: http
+    port: 3000
+  type: ClusterIP

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lister-deployment
+  labels:
+    owner: szabi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: lister
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        name: lister
+    spec:
+      containers:
+      - name: lister
+        image: registry.gitlab.com/somszabolcs3/uhubprojekt/lister:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+      imagePullSecrets:
+        - name: registry-demo-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lister-service
+  labels:
+    owner: szabi
+spec:
+  selector:
+    name: lister
+  ports:
+  - name: http
+    port: 3000
+  type: ClusterIP

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.producer.deployment.name}}
+  labels:
+    owner: szabi
+spec:
+  replicas: {{ .Values.producer.deployment.replicas}}
+  selector:
+    matchLabels:
+      name: producer
+  strategy:
+    type: {{ .Values.producer.deployment.strategy.type}}
+    rollingUpdate:
+      maxSurge: {{ .Values.producer.deployment.strategy.rollingUpdate.maxSurge}}
+      maxUnavailable: {{ .Values.producer.deployment.strategy.rollingUpdate.maxUnavailable}}
+  template:
+    metadata:
+      labels:
+        name: producer
+    spec:
+      containers:
+      - name: producer
+        image: {{ .Values.producer.deployment.containers.image}}
+        imagePullPolicy: {{ .Values.producer.deployment.containers.imagePullPolicy}}
+        ports:
+        - containerPort: {{ .Values.producer.deployment.containers.ports.containerPort}}
+          protocol: {{ .Values.producer.deployment.containers.ports.protocol}}
+      imagePullSecrets:
+        - name: {{ .Values.producer.deployment.imagePullSecrets.name}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: producer-service
+  labels:
+    owner: szabi
+spec:
+  selector:
+    name: producer
+  ports:
+  - name: http
+    port: {{ .Values.producer.service.ports.port}}
+  type: {{ .Values.producer.service.type}}

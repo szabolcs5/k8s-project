@@ -1,0 +1,21 @@
+kraft:
+  enabled: false
+
+zookeeper: 
+  enabled: true
+
+# externalAccess:
+#   enabled: true
+#   service: 
+#     type: LoadBalancer
+#     loadBalancerNames:
+#       - ssim1955-kafka-demo
+#     ports:
+#       external: 9094
+#     autoDiscovery:
+#       enabled: true
+
+serviceAccount:
+  create: true
+rbac:
+  create: true

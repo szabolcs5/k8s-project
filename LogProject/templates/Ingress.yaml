@@ -1,0 +1,38 @@
+#apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: logs-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /logs
+        pathType: Prefix
+        backend:
+          service:
+            name: producer-service
+            port:
+              number: 3000
+      - path: /list
+        pathType: Prefix
+        backend:
+          service:
+            name: lister-service
+            port:
+              number: 3000
+      - path: /loglist
+        pathType: Prefix
+        backend:
+          service:
+            name: lister2-service
+            port:
+              number: 3000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: magic-service
+            port:
+              number: 80

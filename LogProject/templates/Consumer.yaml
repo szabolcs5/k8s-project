@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.consumer.deployment.name}}
+  labels:
+    owner: szabi
+spec:
+  replicas: {{ .Values.consumer.deployment.replicas}}
+  selector:
+    matchLabels:
+      name: consumer
+  strategy:
+    type: {{ .Values.consumer.deployment.strategy.type}}
+    rollingUpdate:
+      maxSurge: {{ .Values.consumer.deployment.strategy.rollingUpdate.maxSurge}}
+      maxUnavailable: {{ .Values.consumer.deployment.strategy.rollingUpdate.maxUnavailable}}
+  template:
+    metadata:
+      labels:
+        name: consumer
+    spec:
+      containers:
+      - name: consumer
+        image: {{ .Values.consumer.deployment.containers.image}}
+        imagePullPolicy: {{ .Values.consumer.deployment.containers.imagePullPolicy}}
+        ports:
+        - containerPort: {{ .Values.consumer.deployment.containers.ports.containerPort}}
+          protocol: {{ .Values.consumer.deployment.containers.ports.protocol}}
+      imagePullSecrets:
+        - name: {{ .Values.consumer.deployment.imagePullSecrets.name}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consumer-service
+  labels:
+    owner: szabi
+spec:
+  selector:
+    name: consumer
+  ports:
+  - name: {{ .Values.consumer.service.ports.name}}
+    port: {{ .Values.consumer.service.ports.port}}
+  type: {{ .Values.consumer.service.type}}

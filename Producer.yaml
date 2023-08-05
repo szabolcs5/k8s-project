@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-deployment
+  labels:
+    owner: szabi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: producer
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        name: producer
+    spec:
+      containers:
+      - name: producer
+        image: registry.gitlab.com/somszabolcs3/uhubprojekt/producer:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+      imagePullSecrets:
+        - name: registry-demo-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: producer-service
+  labels:
+    owner: szabi
+spec:
+  selector:
+    name: producer
+  ports:
+  - name: http
+    port: 3000
+  type: ClusterIP

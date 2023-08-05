@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.lister.deployment.name}}
+  labels:
+    owner: szabi
+spec:
+  replicas: {{ .Values.lister.deployment.replicas}}
+  selector:
+    matchLabels:
+      name: lister
+  strategy:
+    type: {{ .Values.lister.deployment.strategy.type}}
+    rollingUpdate:
+      maxSurge: {{ .Values.lister.deployment.strategy.rollingUpdate.maxSurge}}
+      maxUnavailable:  {{ .Values.lister.deployment.strategy.rollingUpdate.maxUnavailable}}
+  template:
+    metadata:
+      labels:
+        name: lister
+    spec:
+      containers:
+      - name: lister
+        image: {{ .Values.lister.deployment.containers.image}}
+        imagePullPolicy: {{ .Values.lister.deployment.containers.imagePullPolicy}}
+        ports:
+        - containerPort: {{ .Values.lister.deployment.containers.ports.containerPort}}
+          protocol: {{ .Values.lister.deployment.containers.ports.protocol}}
+      imagePullSecrets:
+        - name: {{ .Values.lister.deployment.imagePullSecrets.name}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lister-service
+  labels:
+    owner: szabi
+spec:
+  selector:
+    name: lister
+  ports:
+  - name: http
+    port: {{ .Values.lister.service.ports.port}}
+  type: {{ .Values.lister.service.type}}
